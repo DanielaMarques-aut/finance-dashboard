@@ -27,7 +27,7 @@ date,description,amount,type
 2026-04-26,CTT EXPRESSO,-8.50,debit
 2026-04-27,SALARIO EMPRESA XYZ,1300.00,credit
 2026-04-28,NETFLIX,-15.99,debit
-2026-04-29, cafe dona , -5,00,debit
+2026-04-29,cafe dona, -5.00,debit
 2026-04-30,GALP COMBUSTIVEIS,-45.00,debit
 2026-05-01,NOS COMUNICACOES,-29.99,debit
 2026-05-02,PINGO DOCE,-38.50,debit

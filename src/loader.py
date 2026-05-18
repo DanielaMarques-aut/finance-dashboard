@@ -1,40 +1,35 @@
+from pandas.core.frame import DataFrame
 import os
 from pathlib import Path
+import pandas as pd
 
 def load_transactions(file_path: Path | str) :
     """
-    Load transactions from a CSV file.
+    Load transactions from a CSV file, using pandas for efficient data handling. 
+    Each transaction is represented as a dictionary with keys: date, description, amount, and type.
 
     Args:
         file_path (Path): Path to the transactions CSV file.
 
     Returns:
-        list: List of transactions dictionaries.
+        dataframe: A pandas DataFrame containing the transactions.
     """
+
     if not os.path.exists(file_path):
-        print(f"❌ File not found: {file_path}")
         raise FileNotFoundError(f"File not found: {file_path}")
 
-    transactions: list[dict[str, str | int | float]] = []
-    with open(file_path, "r") as f:
-        # Skip the header line
-        f.readline()
-        for LINE_NUMBER, line in enumerate(f, start=2):   
-            Parts: list[str]=line.strip().split(",")
-            # Parse each line and create a transaction dictionary
-            try:   
-                transaction: dict[str, str | int | float] ={
-                    "date": Parts[0],
-                    "description": Parts[1],
-                    "amount": float(Parts[2]),
-                    "type": Parts[3]
-                }
-                transactions.append(transaction)
-            except(ValueError, IndexError) as e:
-                 print(f"❌ Error parsing line {LINE_NUMBER}: {e}")
-                 
-            except Exception as e:
-                 print(f"❌ Error parsing line {LINE_NUMBER}: {e}")
-    print(f"✓ Loaded {len(transactions)} transactions from {file_path}")             
+    df: DataFrame=pd.read_csv(file_path)
+    # Convert date column to actual dates (not strings)
+    df["date"]=pd.to_datetime(df["date"], errors="coerce")
 
-    return transactions
+     # Strip whitespace from text columns
+    df["description"]=df["description"].str.strip()
+    df["type"]=df["type"].str.strip()
+    
+    print(f"✓ Loaded {len(df)} transactions from {file_path}")
+    print(f"Date range: {df['date'].min().date()} to {df['date'].max().date()}")
+    print(f"Columns: {list(df.columns)}")
+       
+
+    return df
+    

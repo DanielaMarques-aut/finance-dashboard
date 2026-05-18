@@ -27,12 +27,15 @@ def main():
     else:
         print("❌ No data folder found")
     # Load transactions
-    transactions: list[dict[str, str]]=load_transactions(current_path/"data"/"transactions.csv")
-    print(transactions[0])  # Print the first transaction for verification
-    transactions_categorized=categorize_all_transactions(transactions)
+    df=load_transactions("data/transactions.csv")
+    print(df.head())  # Print the first few rows of the DataFrame for verification
+    print(df.describe())  # Print summary statistics of the DataFrame for verification
+    print(df.tail())  # Print the last few rows of the DataFrame for verification
+    
+    transactions_categorized=categorize_all_transactions(df)
     summary=summarize_transactions(transactions=transactions_categorized)
     print_report(summary)
     save_report(summary, current_path/"reports"/"monthly_report.txt")
-
+    
 if __name__ == "__main__":
     main()
