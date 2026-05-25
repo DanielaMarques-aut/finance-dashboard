@@ -11,6 +11,9 @@ def main():
     from src.reporter import print_report, save_report
     from src.analyser import summarise
     from src.reporter import save_chart
+    from src.sheets import test_connection
+    from dotenv import load_dotenv
+
 
 
     print("=== Finance Intelligence Dashboard ===")
@@ -52,6 +55,11 @@ def main():
     print_report(summary)
     save_report(summary, current_path/"reports"/"monthly_report.txt")
     save_chart(summary, current_path/"reports"/"spending_by_category.png")
-    
+    load_dotenv()
+    SPREADSHEET_ID = os.getenv("SPREADSHEET_ID")
+
+    if not SPREADSHEET_ID:
+        raise ValueError("SPREADSHEET_ID not found in .env file")
+    test_connection(SPREADSHEET_ID)
 if __name__ == "__main__":
     main()
