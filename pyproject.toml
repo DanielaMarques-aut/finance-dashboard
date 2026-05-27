@@ -11,3 +11,8 @@ dependencies = [
     "matplotlib>=3.10.9",
     "pandas>=3.0.3",
 ]
+
+[tool.uv.workspace]
+members = [
+    "split_faturas",
+]

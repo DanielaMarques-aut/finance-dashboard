@@ -1,162 +1,134 @@
 # Finance Dashboard
 
-A Python-based financial analysis tool that loads transaction data, categorizes expenses, and generates detailed monthly financial spending reports.
+A Python-based dashboard for analyzing bank transaction data, generating monthly spending reports, visual charts, and validating Google Sheets access.
 
 ## Features
 
-- **Transaction Loading**: Import transactions from CSV files exported from Portuguese banks.
-- **Smart Categorization**: Automatically categorize transactions using keyword matching (groceries, utilities, transport...)
-- **Financial Analysis**: Calculate income, expenses, and net balance
-- **Spending Breakdown**: View expenses organized by category with visual representations
-- **Report Generation**: Generate both console and file-based financial summary reports
-- Modular structure — easy to extend 
+- Load transactions from CSV using `pandas`
+- Automatically categorize expenses using keyword matching
+- Summarize income, expenses, net balance, and spending by category
+- Export a text report and a visual spending chart
+- Connect to Google Sheets using service account credentials
 
 ## Project Structure
 
 ```
 finance-dashboard/
-├── main.py                 # Entry point for the application
-├── pyproject.toml         # Project configuration
-├── README.md              # This file
+├── credentials.json         # Google service account credentials
+├── main.py                  # Entry point for the application
+├── pyproject.toml           # Project configuration
+├── README.md               # Project documentation
 ├── data/
-│   └── transactions.csv   # CSV file containing transaction data
+│   └── transactions.csv    # Input transaction data
 ├── reports/
-│   └── monthly_report.txt # Generated monthly financial report
+│   └── monthly_report.txt  # Generated text report
 └── src/
-    ├── loader.py         # Loads transactions from CSV
-    ├── categorizer.py    # Categorizes transactions by keyword
-    ├── analyser.py       # Analyzes transactions and calculates summary
-    └── reporter.py       # Generates formatted reports
+    ├── analyser.py         # Calculates summaries and category totals
+    ├── categorizer.py      # Applies category keywords to transaction descriptions
+    ├── loader.py           # Loads transaction CSV files into pandas
+    ├── reporter.py         # Prints, saves, and charts report data
+    └── sheets.py           # Google Sheets integration helpers
 ```
 
-## Installation
+## Requirements
 
-### Requirements
 - Python 3.12 or higher
-no external dependencies required
+- `pandas`
+- `matplotlib`
+- `python-dotenv`
+- `gspread`
+- `google-auth`
 
-### Setup
+## Setup
 
-1. Clone or download the project
-2. Navigate to the project directory:
+1. Open a terminal and navigate to the project directory:
    ```bash
    cd finance-dashboard
    ```
 
-3. Create and activate a virtual environment:
+2. Create and activate a virtual environment:
    ```bash
    python -m venv .venv
-   .venv\Scripts\activate  # On Windows
-   source .venv/bin/activate  # On macOS/Linux
+   .venv\Scripts\activate
    ```
 
-4. Install dependencies (if any are added later):
+3. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install pandas matplotlib python-dotenv gspread google-auth
    ```
+
+4. Add your Google service account credentials file as `credentials.json`.
+
+5. Create a `.env` file at the project root with:
+   ```env
+   SPREADSHEET_ID=your_google_sheet_id
+   ```
+
+## Data Format
+
+Place a CSV file at `data/transactions.csv` with the following columns:
+
+```csv
+date,description,amount,type
+2024-01-01,Continente Groceries,-45.50,expense
+2024-01-02,Salário Monthly Income,3000.00,income
+```
+
+- `date`: transaction date
+- `description`: bank description text
+- `amount`: positive for income, negative for expenses
+- `type`: transaction type label
 
 ## Usage
 
-### Preparing Your Data
-
-1. Create a `data/` directory if it doesn't exist
-2. Export transactions from your bank as CSV
-or
-3. Add a `transactions.csv` file with the following format:
-   ```
-   date,description,amount,type
-   2024-01-01,Continente Groceries,-45.50,expense
-   2024-01-02,Salário Monthly Income,3000.00,income
-   ```
-3. Place the file in `data/transactions.csv`
-### Running the Application
+Run the dashboard with:
 
 ```bash
 python main.py
 ```
 
-The application will:
-- Load transactions from `data/transactions.csv`
-- Categorize each transaction based on keywords
-- Generate a financial summary with:
-  - Total income
-  - Total expenses
-  - Net balance (income - expenses)
-  - Spending breakdown by category
-- Display the report in the console
-- Save the report to `reports/monthly_report.txt`
+The script will:
 
-## Supported Categories
+- load `data/transactions.csv`
+- categorize each transaction
+- calculate totals and category breakdowns
+- create `reports/monthly_report.txt`
+- save `reports/spending_by_category.png`
+- validate Google Sheets access using `SPREADSHEET_ID`
 
-Transactions are automatically categorized into:
-- **Groceries**: Supermarkets (Continente, Pingo Doce, Lidl, etc.)
-- **Utilities**: Energy, internet, water providers (EDP, NOS, Vodafone, etc.)
-- **Transport**: Uber, Bolt, public transit, fuel
-- **Streaming**: Netflix, Spotify, YouTube, Disney+, HBO
-- **Health**: Pharmacies, clinics, hospitals, dentists
-- **Food & Dining**: Restaurants, cafés, fast food
-- **Shopping**: Electronics, clothing, online stores
-- **Income**: Salary, transfers received
-- **Transfers**: Money transfers (MB Way, transfers)
-- **Uncategorized**: Transactions that don't match any keyword
+## Categories
 
-## Example Output
+Current categories are defined in `main.py` and include:
 
-```
-=== Finance Intelligence Dashboard ===
-Running on: 2024-01-15
-Working directory: C:\Users\username\finance-dashboard
+- `Groceries`
+- `Utilities`
+- `Transport`
+- `Streaming`
+- `Health`
+- `Food & Dining`
+- `Shopping`
+- `Income`
+- `Transfers`
+- `Uncategorized`
 
-✓ Data folder found
-✓ Transaction file found
-✓ Loaded 25 transactions from data/transactions.csv
+## Google Sheets Integration
 
-=============================================
-   MONTHLY FINANCE REPORT
-   Generated on: 2024-01-15
-=============================================
-Income:..................+3000.00€
-Expenses:...............-542.35€
-Net:...................2457.65€
+The project uses `credentials.json` and `SPREADSHEET_ID` to connect to Google Sheets via the Sheets API.
 
-Spending by Category:
-  Groceries          142.50€  ██████████████
-  Transport           89.25€  ████████
-  Food & Dining      145.60€  ██████████████
-  Utilities           95.00€  █████████
-  Shopping           70.00€  ███████
-=============================================
+- `src/sheets.py` authenticates with `gspread`
+- `main.py` calls `test_connection` to verify access
 
-✓ Report saved to reports/monthly_report.txt
-```
+## Development Notes
 
-## Development
-
-### Module Overview
-
-- **loader.py**: Reads CSV transactions with error handling
-- **categorizer.py**: Matches transaction descriptions against keyword rules
-- **analyser.py**: Calculates financial metrics and category summaries
-- **reporter.py**: Formats and outputs reports to console and file
+- `src/loader.py` loads and normalizes transaction CSV data
+- `src/categorizer.py` applies keyword-based categorization
+- `src/analyser.py` computes totals, category sums, and biggest expense
+- `src/reporter.py` prints the report, saves a text file, and generates charts
 
 ### Extending Categories
 
-Edit `src/categorizer.py` to add new categories or keywords:
-
-```python
-categories = {
-    "Your Category": ["keyword1", "keyword2", "keyword3"],
-    # ... other categories
-}
-```
-
-## Notes
-
-- Amounts in CSV should be positive for income and negative for expenses
-- The keyword matching is case-insensitive
-- First matching keyword wins (order matters in the categories dictionary)
-- Reports are generated in Euro (€) currency format
+Add or modify keywords in `main.py` or update `src/categorizer.py` with new category mappings.
 
 ## License
 
-This project is open source and available for personal and educational use.
+Open source and available for personal or educational use.
