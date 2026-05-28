@@ -12,7 +12,4 @@ dependencies = [
     "pandas>=3.0.3",
 ]
 
-[tool.uv.workspace]
-members = [
-    "split_faturas",
-]
+

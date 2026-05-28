@@ -14,17 +14,18 @@ A Python-based dashboard for analyzing bank transaction data, generating monthly
 
 ```
 finance-dashboard/
-├── credentials.json         # Google service account credentials
+├── credentials.json         # Google service account credentials for Sheets API
 ├── main.py                  # Entry point for the application
-├── pyproject.toml           # Project configuration
-├── README.md               # Project documentation
+├── pyproject.toml           # Project configuration and dependencies
+├── README.md                # Project documentation
 ├── data/
-│   └── transactions.csv    # Input transaction data
+│   └── transactions.csv     # Input transaction data
 ├── reports/
-│   └── monthly_report.txt  # Generated text report
+│   ├── monthly_report.txt   # Generated text report
+│   └── spending_by_category.png # Generated chart
 └── src/
     ├── analyser.py         # Calculates summaries and category totals
-    ├── categorizer.py      # Applies category keywords to transaction descriptions
+    ├── categorizer.py      # Applies keyword-based categorization
     ├── loader.py           # Loads transaction CSV files into pandas
     ├── reporter.py         # Prints, saves, and charts report data
     └── sheets.py           # Google Sheets integration helpers
@@ -38,35 +39,46 @@ finance-dashboard/
 - `python-dotenv`
 - `gspread`
 - `google-auth`
+- `dotenv`
+
+## Installation
+
+1. Clone the repository:   git clone https://github.com/yourusername/finance-dashboard.git
+      
 
 ## Setup
 
 1. Open a terminal and navigate to the project directory:
-   ```bash
-   cd finance-dashboard
+   ```powershell
+   cd C:\Users\username\finance-dashboard
    ```
 
 2. Create and activate a virtual environment:
-   ```bash
+   ```powershell
    python -m venv .venv
-   .venv\Scripts\activate
+   .venv\Scripts\Activate.ps1
    ```
 
 3. Install dependencies:
-   ```bash
+   ```powershell
+   pip install -r requirements.txt
+   ```
+
+   If a `requirements.txt` file is not available, install directly:
+   ```powershell
    pip install pandas matplotlib python-dotenv gspread google-auth
    ```
 
-4. Add your Google service account credentials file as `credentials.json`.
+4. Add your Google service account credentials as `credentials.json` in the project root.
 
-5. Create a `.env` file at the project root with:
+5. Create a `.env` file at the project root and set your spreadsheet ID:
    ```env
    SPREADSHEET_ID=your_google_sheet_id
    ```
 
 ## Data Format
 
-Place a CSV file at `data/transactions.csv` with the following columns:
+The transaction CSV should be placed at `data/transactions.csv` and include at least these columns:
 
 ```csv
 date,description,amount,type
@@ -81,24 +93,24 @@ date,description,amount,type
 
 ## Usage
 
-Run the dashboard with:
+Run the dashboard:
 
-```bash
+```powershell
 python main.py
 ```
 
 The script will:
 
-- load `data/transactions.csv`
-- categorize each transaction
-- calculate totals and category breakdowns
-- create `reports/monthly_report.txt`
+- load transactions from `data/transactions.csv`
+- apply keyword-based categorization
+- compute summaries and category totals
+- save `reports/monthly_report.txt`
 - save `reports/spending_by_category.png`
 - validate Google Sheets access using `SPREADSHEET_ID`
 
-## Categories
+## Category Rules
 
-Current categories are defined in `main.py` and include:
+Category keywords are defined in `main.py`. Current categories include:
 
 - `Groceries`
 - `Utilities`
@@ -109,25 +121,30 @@ Current categories are defined in `main.py` and include:
 - `Shopping`
 - `Income`
 - `Transfers`
-- `Uncategorized`
+
+Transactions that do not match any keyword are assigned `Uncategorized`.
 
 ## Google Sheets Integration
 
-The project uses `credentials.json` and `SPREADSHEET_ID` to connect to Google Sheets via the Sheets API.
+The Sheets integration is handled in `src/sheets.py` and requires:
 
-- `src/sheets.py` authenticates with `gspread`
-- `main.py` calls `test_connection` to verify access
+- `credentials.json` service account file
+- `SPREADSHEET_ID` set in `.env`
+
+`main.py` calls `test_connection(SPREADSHEET_ID)` to validate access.
 
 ## Development Notes
 
-- `src/loader.py` loads and normalizes transaction CSV data
-- `src/categorizer.py` applies keyword-based categorization
-- `src/analyser.py` computes totals, category sums, and biggest expense
-- `src/reporter.py` prints the report, saves a text file, and generates charts
+- `src/loader.py`: loads and normalizes CSV transaction data
+- `src/categorizer.py`: applies category matching rules
+- `src/analyser.py`: computes totals, category summaries, and highest expenses
+- `src/reporter.py`: prints report output, saves report text, and generates charts
+- `src/sheets.py`: manages Google Sheets authentication and access tests
 
-### Extending Categories
+## Notes
 
-Add or modify keywords in `main.py` or update `src/categorizer.py` with new category mappings.
+- Ensure `data/transactions.csv` exists before running `main.py`.
+- `reports/` is created automatically if needed.
 
 ## License
 
