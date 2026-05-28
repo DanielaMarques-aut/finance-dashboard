@@ -1,4 +1,5 @@
 
+
 import gspread
 from google.oauth2.service_account import Credentials
 
@@ -113,3 +114,34 @@ def write_transactions_to_sheet(spreadsheet_id, df, gc, month_label):
         print("✓ Successfully formatted transaction amounts in Google Sheets.")
     except Exception as e:
         print(f"❌ Failed to format transaction amounts in Google Sheets: {e}")
+
+def write_category_breakdown (gc,spreadsheet_id, summary):
+    """Writes spending by category to a Categories tab."""
+    # Connect to the spreadsheet and select or create the category breakdown sheet
+    client = get_sheets_client()
+    sheet = client.open_by_key(spreadsheet_id)
+    try:
+        worksheet = sheet.worksheet("Categories")
+    except gspread.exceptions.WorksheetNotFound:
+        worksheet = sheet.add_worksheet(title="Categories", rows="50", cols="5")
+    except Exception as e:
+        print(f"❌ Failed to access or create the Categories sheet: {e}")
+        return False
+    headers = ["Category", "Amount (€)", "Percentage of Expenses"]
+    # If the sheet is empty, add headers
+    if not worksheet.get_all_values():
+        worksheet.update("A1:C1", [headers])
+        #Bold the header row
+        worksheet.format("A1:C1", {"textFormat": {"bold": True}})
+    total_expenses=summary["Expenses"]
+    # Calculate percentage of total expenses for each category
+    # Prepare data
+    category_rows = []
+    for category, amount in summary["By_Category"].items():
+        percentage = round((amount / total_expenses) * 100, 1) if total_expenses > 0 else 0
+        category_rows.append([category,round(amount, 2), f"{percentage}%"])
+    try:
+        worksheet.update(f"A2:C{len(category_rows)+1}", category_rows)
+        print(f"✓ Successfully wrote category breakdown {len(category_rows)} to Google Sheets.")
+    except Exception as e:
+        print(f"❌ Failed to write category breakdown {len(category_rows)} to Google Sheets: {e}")
