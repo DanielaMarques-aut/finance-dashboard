@@ -1,16 +1,16 @@
 MONTHLY FINANCE REPORT
-Generated: 2026-05-25
+Generated: 2026-05-29
 
 Income:   3950.00€
-Expenses: 1028.22€
-Net:      2921.78€
+Expenses: 1063.62€
+Net:      2886.38€
 
 Spending by Category:
   Utilities: 359.37€
   Shopping: 234.00€
   Groceries: 206.10€
   Food & Dining: 73.00€
+  Health: 69.30€
   Streaming: 67.95€
-  Health: 46.20€
-  Transport: 24.60€
+  Transport: 36.90€
   Uncategorized: 17.00€

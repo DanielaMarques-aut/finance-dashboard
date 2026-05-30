@@ -1,50 +1,54 @@
 # Finance Dashboard
 
-A Python-based dashboard for analyzing bank transaction data, generating monthly spending reports, visual charts, and validating Google Sheets access.
+A Python finance dashboard for analyzing transaction CSV data, categorizing expenses, generating summary reports, and validating Google Sheets access.
+
+## Overview
+
+This project loads bank transaction data from `data/transactions.csv`, applies keyword-based categorization, summarizes totals and category spending, saves a plain-text report, generates a chart, and verifies Google Sheets connectivity using a service account.
 
 ## Features
 
-- Load transactions from CSV using `pandas`
-- Automatically categorize expenses using keyword matching
-- Summarize income, expenses, net balance, and spending by category
-- Export a text report and a visual spending chart
-- Connect to Google Sheets using service account credentials
+- Load transaction data from CSV using `pandas`
+- Categorize transactions using keyword matching
+- Summarize income, expenses, net totals, and spending by category
+- Save report output to `reports/monthly_report.txt`
+- Generate spending chart at `reports/spending_by_category.png`
+- Validate Google Sheets access via service account credentials
 
 ## Project Structure
 
 ```
 finance-dashboard/
-├── credentials.json         # Google service account credentials for Sheets API
-├── main.py                  # Entry point for the application
-├── pyproject.toml           # Project configuration and dependencies
-├── README.md                # Project documentation
+├── credentials.json             # Google service account credentials for Sheets API
+├── main.py                      # Entry point for the application
+├── pyproject.toml               # Project configuration and dependencies
+├── README.md                    # Project documentation
 ├── data/
-│   └── transactions.csv     # Input transaction data
+│   └── transactions.csv         # Input transaction data
 ├── reports/
-│   ├── monthly_report.txt   # Generated text report
+│   ├── monthly_report.txt       # Generated text report
 │   └── spending_by_category.png # Generated chart
 └── src/
-    ├── analyser.py         # Calculates summaries and category totals
-    ├── categorizer.py      # Applies keyword-based categorization
-    ├── loader.py           # Loads transaction CSV files into pandas
-    ├── reporter.py         # Prints, saves, and charts report data
-    └── sheets.py           # Google Sheets integration helpers
+    ├── analyser.py             # Calculates summaries and category totals
+    ├── categorizer.py          # Applies keyword-based categorization
+    ├── loader.py               # Loads transaction CSV files into pandas
+    ├── reporter.py             # Prints, saves, and charts report data
+    └── sheets.py               # Google Sheets integration helpers
 ```
 
 ## Requirements
 
 - Python 3.12 or higher
-- `pandas`
-- `matplotlib`
-- `python-dotenv`
-- `gspread`
-- `google-auth`
-- `dotenv`
+- `pandas`- data analysis library
+- `matplotlib` - chart creation and visualization library
+- `python-dotenv` - loads environment variables from `.env` files
+- `gspread` - Google Sheets API client library
+- `google-auth` - Authentication library for Google APIs
 
-## Installation
+## Dependencies
 
-1. Clone the repository:   git clone https://github.com/yourusername/finance-dashboard.git
-      
+
+Dependencies are declared in `pyproject.toml`. A `requirements.txt` file is not currently included in this repository.
 
 ## Setup
 
@@ -61,24 +65,19 @@ finance-dashboard/
 
 3. Install dependencies:
    ```powershell
-   pip install -r requirements.txt
-   ```
-
-   If a `requirements.txt` file is not available, install directly:
-   ```powershell
    pip install pandas matplotlib python-dotenv gspread google-auth
    ```
 
-4. Add your Google service account credentials as `credentials.json` in the project root.
+4. Add your Google service account credentials file as `credentials.json` in the project root.
 
-5. Create a `.env` file at the project root and set your spreadsheet ID:
+5. Create a `.env` file in the project root and add:
    ```env
    SPREADSHEET_ID=your_google_sheet_id
    ```
 
 ## Data Format
 
-The transaction CSV should be placed at `data/transactions.csv` and include at least these columns:
+Place a CSV file at `data/transactions.csv` with the following columns:
 
 ```csv
 date,description,amount,type
@@ -103,10 +102,15 @@ The script will:
 
 - load transactions from `data/transactions.csv`
 - apply keyword-based categorization
-- compute summaries and category totals
+- compute totals and category breakdowns
+- Generates monthly summary reports (terminal + text file)
+- Creates spending breakdown charts (bar + pie)
 - save `reports/monthly_report.txt`
 - save `reports/spending_by_category.png`
 - validate Google Sheets access using `SPREADSHEET_ID`
+- **Syncs automatically to Google Sheets** ← new
+  - Monthly summary tab
+  - Full transaction history tab  
 
 ## Category Rules
 
@@ -131,15 +135,15 @@ The Sheets integration is handled in `src/sheets.py` and requires:
 - `credentials.json` service account file
 - `SPREADSHEET_ID` set in `.env`
 
-`main.py` calls `test_connection(SPREADSHEET_ID)` to validate access.
+`main.py` loads environment variables and calls `test_connection(SPREADSHEET_ID)` to verify access.
 
 ## Development Notes
 
 - `src/loader.py`: loads and normalizes CSV transaction data
-- `src/categorizer.py`: applies category matching rules
-- `src/analyser.py`: computes totals, category summaries, and highest expenses
-- `src/reporter.py`: prints report output, saves report text, and generates charts
-- `src/sheets.py`: manages Google Sheets authentication and access tests
+- `src/categorizer.py`: applies keyword-based categorization rules
+- `src/analyser.py`: computes totals, category summaries, and key metrics
+- `src/reporter.py`: prints report output and saves report files
+- `src/sheets.py`: manages Google Sheets authentication and connection 
 
 ## Notes
 
