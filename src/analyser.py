@@ -3,8 +3,9 @@ def summarise(df):
     
     expenses_df = df[df["amount"] < 0].copy()
     income_df = df[df["amount"] > 0].copy()
-    
-    total_income = income_df["amount"].sum()
+    total=expenses_df.merge(income_df, how="outer", on=["date", "description", "amount", "type"], indicator=True)## VLOOKUP equivalent — merge two DataFrames
+    print(total)
+    total_income = income_df["amount"].sum() #sum if excel function 
     total_expenses = expenses_df["amount"].sum()
     net = total_income + total_expenses
     
@@ -18,8 +19,14 @@ def summarise(df):
         .round(2)
     )
     
+    # COUNTIF equivalent
+    count_debits = len(df[df["type"] == "debit"])
+    print(f"Debit count (COUNTIF type=debit): {count_debits}")
     # Most expensive single transaction
     biggest = expenses_df.loc[expenses_df["amount"].idxmin()]
+    # AVERAGEIF equivalent
+    avg_expense = df[df["amount"] < 0]["amount"].mean()
+    print(f"Average expense (AVERAGEIF): {abs(avg_expense):.2f}€")
     
     return {
         "income": round(total_income, 2),

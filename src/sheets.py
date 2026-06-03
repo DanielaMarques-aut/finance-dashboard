@@ -188,3 +188,6 @@ def write_category_breakdown (gc,spreadsheet_id, summary):
         print(f"✓ Successfully wrote category breakdown {len(category_rows)} to Google Sheets.")
     except Exception as e:
         print(f"❌ Failed to write category breakdown {len(category_rows)} to Google Sheets: {e}")
+    
+
+

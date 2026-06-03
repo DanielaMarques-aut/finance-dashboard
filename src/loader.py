@@ -19,6 +19,7 @@ def load_transactions(file_path: Path | str) :
         raise FileNotFoundError(f"File not found: {file_path}")
 
     df: DataFrame=pd.read_csv(file_path)
+    
     # Convert date column to actual dates (not strings)
     df["date"]=pd.to_datetime(df["date"], errors="coerce")
 
