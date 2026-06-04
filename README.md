@@ -48,8 +48,7 @@ Spending by Category:
   Transport:       36.90€
   Uncategorized:   17.00€
 ```
-![alt text](image-1.png)
-![mothly_report.txt](reports/mothly_report.txt)
+![monthly_report.txt](reports/monthly_report.txt)
 
     
 #### Spending Distribution
@@ -62,7 +61,7 @@ The dashboard generates both bar and pie charts to visualize spending patterns b
 Summary :Month	Income (€)	Expenses (€)	Net (€)	Transactions
 May 2026	3950	1063,62	2886,38	34
 
-![alt text](image-4.png)
+
 Transactions:Date	Description	Amount	Category
 2026-04-01	CONTINENTE ONLINE	-45,3	Groceries
 2026-04-02	SALARIO EMPRESA XYZ	1300	Income
@@ -92,19 +91,18 @@ Health	69,3	6.5%
 Streaming	67,95	6.4%
 Transport	36,9	3.5%
 Uncategorized	17	1.6%
-![alt text]
-(image-2.png)
 
-![Financial_Dashbord.xlsx](reports/Financial_Dashbord.xlsx)
+
+![Financial_Dashboard.xlsx](reports/Finance_Dashboard.xlsx)
 
 ### Excel file export of  mothly report
 Summary:![alt text]
-(image-6.png)
+
 Transactions:![alt text]
-(image-7.png)
+
 Raw data:![alt text]
-(image-8.png)
-![mothly_report.xlsx](reports/mothly_report.xlsx)
+
+![mothly_report.xlsx](reports/monthly_report.xlsx)
 ## Project Structure
 
 ```
