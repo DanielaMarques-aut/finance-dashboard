@@ -28,8 +28,6 @@ This project loads bank transaction data from `data/transactions.csv`, applies k
 
 ### Sample Output
 
-![Spending by Category](reports/spending_by_category.png)
-
 #### Monthly Summary Report
 
 ```
@@ -52,13 +50,13 @@ Spending by Category:
 ```
 ![alt text](image-1.png)
 ![mothly_report.txt](reports/mothly_report.txt)
-![Financial_Dashbord.xlsx](reports/Financial_Dashbord.xlsx)
-![mothly_report.xlsx](reports/mothly_report.xlsx)
+
     
 #### Spending Distribution
 
 The dashboard generates both bar and pie charts to visualize spending patterns by category, making it easy to identify major expense areas at a glance.
-![alt text](image.png)
+
+![Spending_by_category.png](reports/spending_by_category.png)
 
 ### Excel file conencting to Google Sheets
 Summary :Month	Income (€)	Expenses (€)	Net (€)	Transactions
@@ -82,7 +80,8 @@ Transactions:Date	Description	Amount	Category
 2026-04-14	CTT EXPRESSO	-8,5	Uncategorized
 2026-04-15	SALARIO EMPRESA XYZ	1300	Income
 2026-04-16	NETFLIX	-15,99	Streaming
-![alt text](image-3.png)
+![alt text]
+(image-3.png)
 
 Categories:Category	Amount (€)	Percentage of Expenses
 Utilities	359,37	33.8%
@@ -93,12 +92,19 @@ Health	69,3	6.5%
 Streaming	67,95	6.4%
 Transport	36,9	3.5%
 Uncategorized	17	1.6%
-![alt text](image-2.png)
+![alt text]
+(image-2.png)
+
+![Financial_Dashbord.xlsx](reports/Financial_Dashbord.xlsx)
 
 ### Excel file export of  mothly report
-Summary:![alt text](image-6.png)
-Transactions:![alt text](image-7.png)
-Raw data:![alt text](image-8.png)
+Summary:![alt text]
+(image-6.png)
+Transactions:![alt text]
+(image-7.png)
+Raw data:![alt text]
+(image-8.png)
+![mothly_report.xlsx](reports/mothly_report.xlsx)
 ## Project Structure
 
 ```
