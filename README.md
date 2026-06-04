@@ -57,6 +57,8 @@ The dashboard generates both bar and pie charts to visualize spending patterns b
 
 ![Spending_by_category.png](reports/spending_by_category.png)
 
+
+
 ### Excel file conencting to Google Sheets
 Summary :Month	Income (€)	Expenses (€)	Net (€)	Transactions
 May 2026	3950	1063,62	2886,38	34
@@ -96,11 +98,7 @@ Uncategorized	17	1.6%
 ![Financial_Dashboard.xlsx](reports/Finance_Dashboard.xlsx)
 
 ### Excel file export of  mothly report
-Summary:![alt text]
-
-Transactions:![alt text]
-
-Raw data:![alt text]
+Summary, Transactions,Raw data.
 
 ![mothly_report.xlsx](reports/monthly_report.xlsx)
 ## Project Structure
