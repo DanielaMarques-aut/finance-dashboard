@@ -14,142 +14,144 @@ This project loads bank transaction data from `data/transactions.csv`, applies k
 - Save report output to `reports/monthly_report.txt`
 - Generate spending chart at `reports/spending_by_category.png`
 - Validate Google Sheets access via service account credentials
+- Optionally verifies and syncs data to Google Sheets when configured
+## Output Example
 
+### Generated Reports
+- **monthly_report.txt** - Text summary of income, expenses, and category breakdown
+- **spending_by_category.png** - Visual charts showing spending distribution
+- **Financial_Dashbord.xlsx** - Google Sheets conection with category breakdown, monthly summary and Transactions categorized
+- **mothly_report.xlsx** - Excel export of summary, transactions, and transactions categorized
+
+
+
+
+### Sample Output
+
+![Spending by Category](reports/spending_by_category.png)
+
+#### Monthly Summary Report
+
+```
+MONTHLY FINANCE REPORT
+Generated: 2026-06-03
+
+Income:     3950.00€
+Expenses:   1063.62€
+Net:        2886.38€
+
+Spending by Category:
+  Utilities:      359.37€
+  Shopping:       234.00€
+  Groceries:      206.10€
+  Food & Dining:   73.00€
+  Health:          69.30€
+  Streaming:       67.95€
+  Transport:       36.90€
+  Uncategorized:   17.00€
+```
+![alt text](image-1.png)
+![mothly_report.txt](reports/mothly_report.txt)
+![Financial_Dashbord.xlsx](reports/Financial_Dashbord.xlsx)
+![mothly_report.xlsx](reports/mothly_report.xlsx)
+    
+#### Spending Distribution
+
+The dashboard generates both bar and pie charts to visualize spending patterns by category, making it easy to identify major expense areas at a glance.
+![alt text](image.png)
+
+### Excel file conencting to Google Sheets
+Summary :Month	Income (€)	Expenses (€)	Net (€)	Transactions
+May 2026	3950	1063,62	2886,38	34
+
+![alt text](image-4.png)
+Transactions:Date	Description	Amount	Category
+2026-04-01	CONTINENTE ONLINE	-45,3	Groceries
+2026-04-02	SALARIO EMPRESA XYZ	1300	Income
+2026-04-03	EDP COMERCIAL	-67,2	Utilities
+2026-04-04	NETFLIX	-15,99	Streaming
+2026-04-05	WORTEN LISBOA	-234	Shopping
+2026-04-06	MB WAY JOAO SILVA	50	Transfers
+2026-04-07	GALP COMBUSTIVEIS	-45	Utilities
+2026-04-08	NOS COMUNICACOES	-29,99	Utilities
+2026-04-09	PINGO DOCE	-38,5	Groceries
+2026-04-10	UBER PORTUGAL	-12,3	Transport
+2026-04-11	FARMACIA CENTRAL	-23,1	Health
+2026-04-12	SPOTIFY	-9,99	Streaming
+2026-04-13	RESTAURANTE TASCA	-34	Food & Dining
+2026-04-14	CTT EXPRESSO	-8,5	Uncategorized
+2026-04-15	SALARIO EMPRESA XYZ	1300	Income
+2026-04-16	NETFLIX	-15,99	Streaming
+![alt text](image-3.png)
+
+Categories:Category	Amount (€)	Percentage of Expenses
+Utilities	359,37	33.8%
+Shopping	234	22.0%
+Groceries	206,1	19.4%
+Food & Dining	73	6.9%
+Health	69,3	6.5%
+Streaming	67,95	6.4%
+Transport	36,9	3.5%
+Uncategorized	17	1.6%
+![alt text](image-2.png)
+
+### Excel file export of  mothly report
+Summary:![alt text](image-6.png)
+Transactions:![alt text](image-7.png)
+Raw data:![alt text](image-8.png)
 ## Project Structure
 
 ```
 finance-dashboard/
-├── credentials.json             # Google service account credentials for Sheets API
-├── main.py                      # Entry point for the application
-├── pyproject.toml               # Project configuration and dependencies
-├── README.md                    # Project documentation
+├── credentials.json         # optional: Google service account JSON
+├── main.py                  # entry point
+├── pyproject.toml           # project metadata / dependencies
+├── README.md                # this file
 ├── data/
-│   └── transactions.csv         # Input transaction data
+│   └── transactions.csv     # input transactions
 ├── reports/
-│   ├── monthly_report.txt       # Generated text report
-│   └── spending_by_category.png # Generated chart
+│   ├── monthly_report.txt   # generated text report
+│   └── spending_by_category.png
 └── src/
-    ├── analyser.py             # Calculates summaries and category totals
-    ├── categorizer.py          # Applies keyword-based categorization
-    ├── loader.py               # Loads transaction CSV files into pandas
-    ├── reporter.py             # Prints, saves, and charts report data
-    └── sheets.py               # Google Sheets integration helpers
+    ├── analyser.py
+    ├── categorizer.py
+    ├── loader.py
+    ├── reporter.py
+    └── sheets.py
 ```
 
-## Requirements
+## Data format
 
-- Python 3.12 or higher
-- `pandas`- data analysis library
-- `matplotlib` - chart creation and visualization library
-- `python-dotenv` - loads environment variables from `.env` files
-- `gspread` - Google Sheets API client library
-- `google-auth` - Authentication library for Google APIs
-
-## Dependencies
-
-
-Dependencies are declared in `pyproject.toml`. A `requirements.txt` file is not currently included in this repository.
-
-## Setup
-
-1. Open a terminal and navigate to the project directory:
-   ```powershell
-   cd C:\Users\username\finance-dashboard
-   ```
-
-2. Create and activate a virtual environment:
-   ```powershell
-   python -m venv .venv
-   .venv\Scripts\Activate.ps1
-   ```
-
-3. Install dependencies:
-   ```powershell
-   pip install pandas matplotlib python-dotenv gspread google-auth
-   ```
-
-4. Add your Google service account credentials file as `credentials.json` in the project root.
-
-5. Create a `.env` file in the project root and add:
-   ```env
-   SPREADSHEET_ID=your_google_sheet_id
-   ```
-
-## Data Format
-
-Place a CSV file at `data/transactions.csv` with the following columns:
+CSV must include at least these columns:
 
 ```csv
 date,description,amount,type
 2024-01-01,Continente Groceries,-45.50,expense
-2024-01-02,Salário Monthly Income,3000.00,income
+2024-01-02,Salary,3000.00,income
 ```
 
-- `date`: transaction date
-- `description`: bank description text
+- `date`: ISO date (YYYY-MM-DD)
+- `description`: transaction text from the bank
 - `amount`: positive for income, negative for expenses
-- `type`: transaction type label
+- `type`: optional type label (e.g. `income` / `expense`)
 
-## Usage
+## Google Sheets integration
 
-Run the dashboard:
+The Sheets helpers live in `src/sheets.py`. To enable:
 
-```powershell
-python main.py
-```
+- Add `credentials.json` to the project root (service account)
+- Set `SPREADSHEET_ID` in `.env`
 
-The script will:
+When configured, the project will attempt to validate the connection and can
+export summary and transactions to the specified spreadsheet.
 
-- load transactions from `data/transactions.csv`
-- apply keyword-based categorization
-- compute totals and category breakdowns
-- Generates monthly summary reports (terminal + text file)
-- Creates spending breakdown charts (bar + pie)
-- save `reports/monthly_report.txt`
-- save `reports/spending_by_category.png`
-- validate Google Sheets access using `SPREADSHEET_ID`
-- **Syncs automatically to Google Sheets** ← new
-  - Monthly summary tab
-  - Full transaction history tab  
+## Development notes
 
-## Category Rules
-
-Category keywords are defined in `main.py`. Current categories include:
-
-- `Groceries`
-- `Utilities`
-- `Transport`
-- `Streaming`
-- `Health`
-- `Food & Dining`
-- `Shopping`
-- `Income`
-- `Transfers`
-
-Transactions that do not match any keyword are assigned `Uncategorized`.
-
-## Google Sheets Integration
-
-The Sheets integration is handled in `src/sheets.py` and requires:
-
-- `credentials.json` service account file
-- `SPREADSHEET_ID` set in `.env`
-
-`main.py` loads environment variables and calls `test_connection(SPREADSHEET_ID)` to verify access.
-
-## Development Notes
-
-- `src/loader.py`: loads and normalizes CSV transaction data
-- `src/categorizer.py`: applies keyword-based categorization rules
-- `src/analyser.py`: computes totals, category summaries, and key metrics
-- `src/reporter.py`: prints report output and saves report files
-- `src/sheets.py`: manages Google Sheets authentication and connection 
-
-## Notes
-
-- Ensure `data/transactions.csv` exists before running `main.py`.
-- `reports/` is created automatically if needed.
+- Use `src/loader.py` to inspect and normalize CSV input
+- Update category rules in `src/categorizer.py`
+- `src/reporter.py` handles text report and chart generation
 
 ## License
 
-Open source and available for personal or educational use.
+Open for personal and educational use.
+
