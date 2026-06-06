@@ -98,9 +98,9 @@ Uncategorized	17	1.6%
 ![Financial_Dashboard.xlsx](reports/Finance_Dashboard.xlsx)
 
 ### Excel file export of  mothly report
-Summary, Transactions,Raw data.
+Excel fiele with export of transactions categorized, amout by category breakdown, including barchart and summary w«th total expenses, income, savings and transactions number. It also identifies bigest expense and where it is from
 
-![mothly_report.xlsx](reports/monthly_report.xlsx)
+![mothly_report.xlsx](reports/finance_report.xlsx)
 ## Project Structure
 
 ```

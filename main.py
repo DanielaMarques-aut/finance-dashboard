@@ -9,8 +9,9 @@ from src.loader import load_transactions
 from src.categorizer import categorize_transaction
 from src.reporter import print_report, save_report, save_chart
 from src.analyser import summarise
-from src.sheets import get_sheets_client, write_monthly_summary_to_sheet, write_transactions_to_sheet, write_category_breakdown 
+from src.sheets import get_sheets_client, write_monthly_summary_to_sheet, write_transactions_to_sheet, write_category_breakdown, write_raw_data_to_sheet
 from dotenv import load_dotenv
+from src.Excel_reporter import build_excel_report
 
 # Category rules: keyword → category
 # Order matters - first match wins
@@ -76,25 +77,14 @@ def run_dashboard():
         write_monthly_summary_to_sheet(SPREADSHEET_ID, summary, gc, moth_label)
         write_transactions_to_sheet(SPREADSHEET_ID, transactions_categorized, gc, moth_label)
         write_category_breakdown(gc, SPREADSHEET_ID, summary)
+        write_raw_data_to_sheet(SPREADSHEET_ID, df, gc, moth_label)
         print("✓ Successfully wrote to Google Sheets.")
-        with pd.ExcelWriter(current_path/"reports"/"monthly_report.xlsx", engine="openpyxl") as writer:
-            summary_df = pd.DataFrame([{
-            "Metric": "Total Income",
-            "Value (€)": summary["income"]
-        }, {
-            "Metric": "Total Expenses",
-            "Value (€)": summary["expenses"]
-        }, {
-            "Metric": "Net",
-            "Value (€)": summary["net"]
-        }, {
-            "Metric": "Transactions",
-            "Value (€)": summary["transaction_count"]
-        }])
-            summary_df.to_excel(writer, sheet_name="Summary", index=False)
-            transactions_categorized.to_excel(writer, sheet_name="Transactions", index=False)
-            df.to_excel(writer, sheet_name="Raw Data", index=False)
+       
+
+        # Add after save_chart():
+        build_excel_report(transactions_categorized, summary, "reports/finance_report.xlsx")
         print("✓ Successfully wrote Excel report.")
+
         
     except Exception as e:
         print(f"⚠️ Sheets update failed: {e}")

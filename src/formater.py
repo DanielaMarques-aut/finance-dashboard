@@ -1,6 +1,6 @@
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side, numbers
 from openpyxl.utils import get_column_letter
-from openpyxl.chart import BarChart, Reference, PieChart
+from openpyxl.chart import BarChart, Reference
 
 # Color palette
 COLORS = {
@@ -64,7 +64,7 @@ def add_spending_by_category_chart(category_sheet, workbook):
     chart.type = "col"
     chart.style = 10
     chart.width = 20
-    chart.height = 12
+    chart.height = 15
     chart.title = "Spending by Category"
     chart.x_axis.title = "Category"
     chart.y_axis.title = "Amount (€)"

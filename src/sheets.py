@@ -175,7 +175,7 @@ def write_category_breakdown (gc,spreadsheet_id, summary):
     if  worksheet.get_all_values() is None or len(worksheet.get_all_values()) == 1:
         worksheet.update("A1:C1", [headers])
         #Bold the header row
-        worksheet.format("A1:C1", {"textFormat": {"bold": True}})
+        worksheet.format("A1:C1", {"textFormat": {"bold": True}, "backgroundColor": {"red": 0.9, "green": 0.9, "blue": 0.9}})
     total_expenses=summary["expenses"]
     # Calculate percentage of total expenses for each category
     # Prepare data
@@ -191,3 +191,37 @@ def write_category_breakdown (gc,spreadsheet_id, summary):
     
 
 
+def write_raw_data_to_sheet(spreadsheet_id, df, gc, month_label):
+    """
+    Writes the raw transactions data to a Google Sheet.
+    Creates a new sheet for the month if it doesn't exist, or updates the existing one.
+    """
+    # Connect to the spreadsheet and select or create the month sheet
+    try:
+        client = get_sheets_client()
+        sheet = client.open_by_key(spreadsheet_id)
+        worksheet = sheet.worksheet("Folha1")
+    except gspread.exceptions.WorksheetNotFound:
+        worksheet = sheet.add_worksheet(title="Folha1", rows="100", cols="10")
+    except Exception as e:
+        print(f"❌ Failed to access or create the Folha1 sheet: {e}")
+        return False
+    headers = ["Date","Description","Amount","type"]
+    # If the sheet is empty, add headers
+    if  worksheet.get_all_values()is None or len(worksheet.get_all_values()) == 1:
+        worksheet.update("A1:D1", [headers])
+        #Bold the header row
+        worksheet.format("A1:D1", {"textFormat": {"bold": True}, "backgroundColor": {"red": 0.9, "green": 0.9, "blue": 0.9}})
+        # Prepare data
+        df_export = df[["date", "description", "amount", "type"]].copy()
+        df_export["date"] = df_export["date"].dt.strftime("%Y-%m-%d")
+        
+    
+        # Convert transactions to a list of lists for gspread
+        transaction_rows =  df_export.values.tolist()
+        print(f"Prepared {len(transaction_rows)} transactions for export to Google Sheets.")
+        try:
+            worksheet.update(f"A2:D{len(transaction_rows)+1}", transaction_rows)
+            print(f"✓ Successfully wrote transactions for {month_label} to Google Sheets.")
+        except Exception as e:
+            print(f"❌ Failed to write transactions for {month_label} to Google Sheets: {e}")
