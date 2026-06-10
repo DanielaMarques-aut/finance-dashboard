@@ -12,6 +12,8 @@ from src.analyser import summarise
 from src.sheets import get_sheets_client, write_monthly_summary_to_sheet, write_transactions_to_sheet, write_category_breakdown, write_raw_data_to_sheet
 from dotenv import load_dotenv
 from src.Excel_reporter import build_excel_report
+from src.template_filler import fill_Template
+from src.email_notifier import send_summary_email
 
 # Category rules: keyword → category
 # Order matters - first match wins
@@ -66,10 +68,12 @@ def run_dashboard():
     save_chart(summary, current_path/"reports"/"spending_by_category.png")
     
     # Write to Google Sheets
+    
     print("Connecting to Google Sheets...")
     if not SPREADSHEET_ID:
         raise ValueError("SPREADSHEET_ID not found in .env file")
     try:
+    
         gc = get_sheets_client()
         print("✓ Successfully authenticated with Google Sheets API.")
     
@@ -80,11 +84,13 @@ def run_dashboard():
         write_raw_data_to_sheet(SPREADSHEET_ID, df, gc, moth_label)
         print("✓ Successfully wrote to Google Sheets.")
        
-
+        
         # Add after save_chart():
         build_excel_report(transactions_categorized, summary, "reports/finance_report.xlsx")
         print("✓ Successfully wrote Excel report.")
-
+        output_filename = f"reports/Finance_Report_{date.today().strftime('%Y%m%d')}.xlsx"
+        fill_Template(summary, transactions_categorized, output_filename)
+        send_summary_email(summary, output_filename)
         
     except Exception as e:
         print(f"⚠️ Sheets update failed: {e}")
