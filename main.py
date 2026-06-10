@@ -2,7 +2,6 @@
 # Finance Dashboard - entry point
 
 import os
-import pandas as pd
 from pathlib import Path
 from datetime import date
 from src.loader import load_transactions

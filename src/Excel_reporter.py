@@ -1,7 +1,6 @@
 import pandas as pd
 from openpyxl import load_workbook
-from openpyxl.styles import Font, PatternFill, Alignment
-from openpyxl.utils import get_column_letter
+from openpyxl.styles import Font
 from datetime import date
 import os
 from src.formater import (style_header, style_curency_column, auto_adjust_column_width, add_alternating_row_colors,

@@ -1,6 +1,5 @@
 import schedule
 import time
-from datetime import datetime
 from main import run_dashboard
 import logging
 import os

@@ -1,6 +1,5 @@
 from openpyxl import load_workbook
 from datetime import date
-import pandas as pd
 import os
 
 def fill_Template(summary, df, output_path):

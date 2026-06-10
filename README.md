@@ -1,126 +1,122 @@
 # Finance Dashboard
 
-A Python finance dashboard for analyzing transaction CSV data, categorizing expenses, generating summary reports, and validating Google Sheets access.
+A comprehensive Python finance dashboard for analyzing transaction data, with automated categorization, multi-format reporting, Google Sheets integration, email notifications, and scheduled daily runs.
 
 ## Overview
 
-This project loads bank transaction data from `data/transactions.csv`, applies keyword-based categorization, summarizes totals and category spending, saves a plain-text report, generates a chart, and verifies Google Sheets connectivity using a service account.
+This project automates financial analysis by loading bank transaction data from CSV, applying intelligent keyword-based categorization, generating comprehensive reports (text, charts, Excel), syncing to Google Sheets, and sending email summaries. It can run manually or on a daily schedule.
 
 ## Features
 
-- Load transaction data from CSV using `pandas`
-- Categorize transactions using keyword matching
-- Summarize income, expenses, net totals, and spending by category
-- Save report output to `reports/monthly_report.txt`
-- Generate spending chart at `reports/spending_by_category.png`
-- Validate Google Sheets access via service account credentials
-- Optionally verifies and syncs data to Google Sheets when configured
-## Output Example
+- **Transaction Loading**: Import transactions from CSV using `pandas`
+- **Smart Categorization**: Keyword-based categorization with configurable rules
+- **Multi-Format Reporting**:
+  - Plain text summaries to `reports/monthly_report.txt`
+  - Spending distribution charts to `reports/spending_by_category.png`
+  - Excel exports with multiple worksheets
+- **Google Sheets Integration**: Sync summaries, transactions, and breakdowns to Google Sheets
+- **Email Notifications**: Send daily finance summary emails
+- **Scheduled Automation**: Daily runs at 08:00 AM with logging
+- **Data Analysis**: Calculate income, expenses, net totals, and category breakdowns
 
-### Generated Reports
-- **monthly_report.txt** - Text summary of income, expenses, and category breakdown
-- **spending_by_category.png** - Visual charts showing spending distribution
-- **Financial_Dashbord.xlsx** - Google Sheets conection with category breakdown, monthly summary and Transactions categorized
-- **mothly_report.xlsx** - Excel export of summary, transactions, and transactions categorized
-
-
-
-
-### Sample Output
-
-#### Monthly Summary Report
-
-```
-MONTHLY FINANCE REPORT
-Generated: 2026-06-03
-
-Income:     3950.00€
-Expenses:   1063.62€
-Net:        2886.38€
-
-Spending by Category:
-  Utilities:      359.37€
-  Shopping:       234.00€
-  Groceries:      206.10€
-  Food & Dining:   73.00€
-  Health:          69.30€
-  Streaming:       67.95€
-  Transport:       36.90€
-  Uncategorized:   17.00€
-```
-![monthly_report.txt](reports/monthly_report.txt)
-
-    
-#### Spending Distribution
-
-The dashboard generates both bar and pie charts to visualize spending patterns by category, making it easy to identify major expense areas at a glance.
-
-![Spending_by_category.png](reports/spending_by_category.png)
-
-
-
-### Excel file conencting to Google Sheets
-Summary :Month	Income (€)	Expenses (€)	Net (€)	Transactions
-May 2026	3950	1063,62	2886,38	34
-
-
-Transactions:Date	Description	Amount	Category
-2026-04-01	CONTINENTE ONLINE	-45,3	Groceries
-2026-04-02	SALARIO EMPRESA XYZ	1300	Income
-2026-04-03	EDP COMERCIAL	-67,2	Utilities
-2026-04-04	NETFLIX	-15,99	Streaming
-2026-04-05	WORTEN LISBOA	-234	Shopping
-2026-04-06	MB WAY JOAO SILVA	50	Transfers
-2026-04-07	GALP COMBUSTIVEIS	-45	Utilities
-2026-04-08	NOS COMUNICACOES	-29,99	Utilities
-2026-04-09	PINGO DOCE	-38,5	Groceries
-2026-04-10	UBER PORTUGAL	-12,3	Transport
-2026-04-11	FARMACIA CENTRAL	-23,1	Health
-2026-04-12	SPOTIFY	-9,99	Streaming
-2026-04-13	RESTAURANTE TASCA	-34	Food & Dining
-2026-04-14	CTT EXPRESSO	-8,5	Uncategorized
-2026-04-15	SALARIO EMPRESA XYZ	1300	Income
-2026-04-16	NETFLIX	-15,99	Streaming
-![alt text]
-(image-3.png)
-
-Categories:Category	Amount (€)	Percentage of Expenses
-Utilities	359,37	33.8%
-Shopping	234	22.0%
-Groceries	206,1	19.4%
-Food & Dining	73	6.9%
-Health	69,3	6.5%
-Streaming	67,95	6.4%
-Transport	36,9	3.5%
-Uncategorized	17	1.6%
-
-
-![Financial_Dashboard.xlsx](reports/Finance_Dashboard.xlsx)
-
-### Excel file export of  mothly report
-Excel fiele with export of transactions categorized, amout by category breakdown, including barchart and summary w«th total expenses, income, savings and transactions number. It also identifies bigest expense and where it is from
-
-![mothly_report.xlsx](reports/finance_report.xlsx)
 ## Project Structure
 
 ```
 finance-dashboard/
-├── credentials.json         # optional: Google service account JSON
-├── main.py                  # entry point
-├── pyproject.toml           # project metadata / dependencies
-├── README.md                # this file
+├── main.py                 # Entry point for manual runs
+├── scheduler.py            # Automated daily scheduler
+├── pyproject.toml         # Project dependencies and metadata
+├── credentials.json       # Google service account (in .gitignore)
 ├── data/
-│   └── transactions.csv     # input transactions
-├── reports/
-│   ├── monthly_report.txt   # generated text report
-│   └── spending_by_category.png
+│   └── transactions.csv   # Input transaction data
+├── logs/
+│   └── scheduler.log      # Scheduler execution logs
+├── reports/               # Generated output files
+│   ├── monthly_report.txt
+│   ├── spending_by_category.png
+│   ├── Finance_Dashboard.xlsx
+│   └── monthly_report.xlsx
 └── src/
-    ├── analyser.py
-    ├── categorizer.py
-    ├── loader.py
-    ├── reporter.py
-    └── sheets.py
+    ├── loader.py          # CSV loading
+    ├── categorizer.py     # Transaction categorization
+    ├── analyser.py        # Financial analysis
+    ├── reporter.py        # Text and chart reporting
+    ├── Excel_reporter.py  # Excel export
+    ├── sheets.py          # Google Sheets integration
+    ├── email_notifier.py  # Email delivery
+    ├── template_filler.py # Template processing
+    └── formater.py        # Data formatting
 ```
+
+## Usage
+
+### Manual Run
+Execute the dashboard once with the latest transaction data:
+```bash
+python main.py
+```
+Outputs are generated immediately to `reports/` and synced to Google Sheets and email (if configured).
+
+### Automated Scheduler
+For continuous daily automation:
+```bash
+python scheduler.py
+```
+
+**How it works:**
+- Starts a background scheduler that runs continuously
+- Executes `run_dashboard()` every day at **08:00 AM**
+- Logs all runs to `logs/scheduler.log`
+- Catches and logs errors without stopping the scheduler
+- Press `Ctrl+C` to stop
+
+**Typical Setup:**
+- Use `python main.py` for testing or one-off analysis
+- Use `python scheduler.py` in production (consider running via system task scheduler or cron)
+
+## Configuration
+
+Create a `.env` file in the project root with all required variables:
+
+```
+SPREADSHEET_ID=your_google_sheet_id
+EMAIL_SENDER=your_email@gmail.com
+EMAIL_RECEIVER=recipient@example.com
+EMAIL_PASSWORD=your_app_password
+```
+
+### Google Sheets Setup
+1. Create a Google Cloud project
+2. Enable Google Sheets API
+3. Create a service account and download `credentials.json`
+4. Place `credentials.json` in the project root (add to `.gitignore`)
+5. Share your Google Sheet with the service account email
+6. Set `SPREADSHEET_ID` to the sheet ID from the URL
+
+### Email Setup (Gmail with App Password)
+1. Enable 2-Step Verification on your Google Account
+2. Go to [Google App Passwords](https://myaccount.google.com/apppasswords)
+3. write a name for the password and click crate (you can use something like`python - finance-dashboard` so you can identify where this is been used)
+4. Google generates a 16-character password — copy it
+5. Set in `.env`:
+   ```
+   EMAIL_SENDER=your_email@gmail.com
+   EMAIL_PASSWORD=xxxx xxxx xxxx xxxx
+   EMAIL_RECEIVER=recipient@example.com
+   ```
+6. If email credentials are missing, the dashboard will print a warning but continue running
+
+## Dependencies
+
+Main dependencies (see `pyproject.toml`):
+- `pandas` - Data processing
+- `matplotlib` - Chart generation
+- `google-auth`, `gspread` - Google Sheets API
+- `openpyxl`, `xlsxwriter` - Excel file generation
+- `schedule` - Task scheduling
+- `python-dotenv` - Environment configuration
+
+
 
 ## Data format
 
@@ -147,11 +143,33 @@ The Sheets helpers live in `src/sheets.py`. To enable:
 When configured, the project will attempt to validate the connection and can
 export summary and transactions to the specified spreadsheet.
 
-## Development notes
+## Excel Templates
 
-- Use `src/loader.py` to inspect and normalize CSV input
-- Update category rules in `src/categorizer.py`
-- `src/reporter.py` handles text report and chart generation
+The project uses an Excel template (`Data/Finance_template.xlsx`) that gets filled with your data each run.
+
+**Template Structure:**
+- **Dashboard** sheet: Monthly summary (income, expenses, net)
+- **Transactions** sheet: All categorized transactions
+- **Categories** sheet: Spending breakdown by category
+
+**How it works:**
+- `src/template_filler.py` loads the blank template
+- Fills in summary data, transaction rows, and category totals
+- Saves to `reports/Finance_Dashboard.xlsx` after each run
+
+**To customize:**
+1. Edit `Data/Finance_template.xlsx` with your desired formatting
+2. Keep the same sheet names (Dashboard, Transactions, Categories)
+3. The script will populate cells with your data
+
+## Development Notes
+
+- **CSV Input**: Use `src/loader.py` to inspect and normalize CSV data
+- **Categorization**: Update rules in `src/categorizer.py` (keyword-based matching)
+- **Reports**: `src/reporter.py` generates text summaries and charts
+- **Email**: `src/email_notifier.py` sends formatted summaries (gracefully skips if unconfigured)
+- **Sheets**: `src/sheets.py` handles Google Sheets API integration
+- **Logging**: `scheduler.py` writes operation logs to `logs/scheduler.log`
 
 ## License
 
