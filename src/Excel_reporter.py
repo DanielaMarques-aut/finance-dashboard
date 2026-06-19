@@ -31,8 +31,13 @@ def build_excel_report(df, summary, output_path):
     print("✓ Prepared transactions data for Excel report.")
     
     # Categories sheet
+    total_expenses = summary["expenses"] if summary["expenses"] else 0
     categories_df = pd.DataFrame([
-        {"Category": cat, "Amount (€)": round(amount, 2)}
+        {
+            "Category": cat,
+            "Amount (€)": round(amount, 2),
+            "Percentage": (amount / total_expenses) if total_expenses > 0 else 0
+        }
         for cat, amount in summary["by_category"].items()
     ])
     print("✓ Prepared categories data for Excel report.")
@@ -101,6 +106,13 @@ def build_excel_report(df, summary, output_path):
     style_header(ws_cats, 1, 2)
     freeze_header(ws_cats)
     style_curency_column(ws_cats, "B", 2, ws_cats.max_row)
+    # Format percentage column C as percent
+    for row in range(2, ws_cats.max_row + 1):
+        cell = ws_cats[f"C{row}"]
+        try:
+            cell.number_format = '0.0%'
+        except Exception:
+            pass
     add_alternating_row_colors(ws_cats, 2, ws_cats.max_row, 2)
     auto_adjust_column_width(ws_cats, 2)
     print("✓ Formatted Categories sheet.")

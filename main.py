@@ -8,12 +8,14 @@ from src.loader import load_transactions
 from src.categorizer import categorize_transaction
 from src.reporter import print_report, save_report, save_chart
 from src.analyser import summarise
-from src.sheets import get_sheets_client, write_monthly_summary_to_sheet, write_transactions_to_sheet, write_category_breakdown, write_raw_data_to_sheet
+from src.sheets import get_sheets_client, write_transactions_to_sheet, write_category_breakdown, write_raw_data_to_sheet, write_monthly_summaries_to_sheet
 from dotenv import load_dotenv
 from src.Excel_reporter import build_excel_report
 from src.template_filler import fill_Template
 from src.email_notifier import send_summary_email
-
+from src.database import initialize_database,  save_monthly_summary, get_monthly_summary, import_from_df
+import pandas as pd
+import sqlite3
 # Category rules: keyword → category
 # Order matters - first match wins
 categories= {
@@ -36,6 +38,8 @@ def run_dashboard():
     print(f"Running on: {date.today()}")
     print(f"Working directory: {Path.cwd()}")
     current_path: Path=Path.cwd()
+    # Initialize database
+    initialize_database()
 
     # Check data folder exists
     if (current_path/"data").exists():
@@ -55,9 +59,9 @@ def run_dashboard():
     print(df.shape)  # Print the shape of the DataFrame for verification
     print(list(df.columns))  # Print the column names of the DataFrame for verification
     print(df.dtypes)  # Print the data types of the DataFrame columns for verification
-    df_toalter=df.copy()  # Avoid SettingWithCopyWarning when categorizing
+    df_to_alter=df.copy()  # Avoid SettingWithCopyWarning when categorizing
     #categorize and summarize transactions
-    transactions_categorized=categorize_transaction(df=df_toalter, categories=categories)
+    transactions_categorized=categorize_transaction(df=df_to_alter, categories=categories)
     summary=summarise(transactions_categorized)
     
     # Generate reports
@@ -77,20 +81,64 @@ def run_dashboard():
         print("✓ Successfully authenticated with Google Sheets API.")
     
         moth_label = date.today().strftime("%B %Y")
-        write_monthly_summary_to_sheet(SPREADSHEET_ID, summary, gc, moth_label)
         write_transactions_to_sheet(SPREADSHEET_ID, transactions_categorized, gc, moth_label)
         write_category_breakdown(gc, SPREADSHEET_ID, summary)
         write_raw_data_to_sheet(SPREADSHEET_ID, df, gc, moth_label)
         print("✓ Successfully wrote to Google Sheets.")
+            # Also write full monthly summaries (grouped by Month from transactions)
+        write_monthly_summaries_to_sheet(SPREADSHEET_ID, gc)
        
-        
+       #import to database
+        import_from_df(transactions_categorized)
+        #query using sql+pandas
+        conn= sqlite3.connect("data/finance.db")
+
+        #montly comparation
+        monthly_df=pd.read_sql_query(""" 
+        SELECT 
+        month,
+        SUM(CASE When amount > 0  then amount else 0 end) as income,
+        SUM(CASE When amount < 0 then abs(amount) else 0 end) as expenses,
+        count(*) as transactions_count,
+        sum(amount) as net
+        from transactions
+        group by month
+        order by month 
+        """, conn)
+
+        #spending by category by month
+        category_trend_df=pd.read_sql_query("""
+        SELECT 
+        month,
+        category,
+        sum (Abs(amount)) as total
+        from transactions
+        where amount < 0
+        group by month, category
+        order by month, total desc
+        """, conn)
+        conn.close() 
+
+        print("Monthly comparation")
+        print(monthly_df.to_string(index=False))
+
+        monthly_summaries = get_monthly_summary()
+        for monthly_summary in monthly_summaries:
+            save_monthly_summary(monthly_summary)
+
+
         # Add after save_chart():
-        build_excel_report(transactions_categorized, summary, "reports/finance_report.xlsx")
+        build_excel_report(transactions_categorized, summary,  f"reports/Finance_Report_{date.today().strftime('%Y%m%d')}.xlsx")
         print("✓ Successfully wrote Excel report.")
         output_filename = f"reports/Finance_Report_{date.today().strftime('%Y%m%d')}.xlsx"
-        fill_Template(summary, transactions_categorized, output_filename)
+        fill_Template(summary, transactions_categorized, output_filename, monthly_df)
         send_summary_email(summary, output_filename)
         
+        
+
+
+      
+
     except Exception as e:
         print(f"⚠️ Sheets update failed: {e}")
         print("Local reports still saved successfully")

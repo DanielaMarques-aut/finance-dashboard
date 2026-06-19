@@ -2,6 +2,8 @@
 
 import gspread
 from google.oauth2.service_account import Credentials
+from datetime import datetime
+from src.database import get_monthly_summary
 
 scopes = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -82,6 +84,67 @@ def write_monthly_summary_to_sheet(spreadsheet_id, summary, gc, month_label):
         print("✓ Successfully wrote monthly summary to Google Sheets.")
     except Exception as e:
         print(f"❌ Failed to write monthly summary to Google Sheets: {e}")
+
+def write_monthly_summaries_to_sheet(spreadsheet_id, gc):
+    """Writes all monthly summaries (grouped by Month) to the Summary sheet.
+    Uses `get_monthly_summary()` from the local database to build rows.
+    """
+    try:
+        client = get_sheets_client()
+        sheet = client.open_by_key(spreadsheet_id)
+        try:
+            worksheet = sheet.worksheet("Summary")
+        except gspread.exceptions.WorksheetNotFound:
+            worksheet = sheet.add_worksheet(title="Summary", rows="100", cols="10")
+    except Exception as e:
+        print(f"❌ Failed to access or create the Monthly Summaries sheet: {e}")
+        return False
+
+    headers = ["Month", "Income (€)", "Expenses (€)", "Net (€)", "Transactions"]
+    # Clear existing data and write headers
+    try:
+        worksheet.clear()
+        worksheet.update("A1:E1", [headers])
+        worksheet.format("A1:E1", {"textFormat": {"bold": True}, "backgroundColor": {"red": 0.9, "green": 0.9, "blue": 0.9}})
+    except Exception:
+        pass
+
+    # Fetch monthly summaries from DB
+    try:
+        monthly_summaries = get_monthly_summary()
+    except Exception as e:
+        print(f"❌ Failed to fetch monthly summaries: {e}")
+        return False
+
+    rows = []
+    for m in monthly_summaries:
+        month_val = m.get("Month")
+        if month_val:
+            try:
+                # convert YYYY-MM to 'Month YYYY' to avoid Sheets auto-date formatting
+                pretty_month = datetime.strptime(month_val, "%Y-%m").strftime("%B %Y")
+            except Exception:
+                pretty_month = month_val
+        else:
+            pretty_month = ""
+        rows.append([
+            pretty_month,
+            m.get("income"),
+            m.get("expenses"),
+            m.get("net"),
+            m.get("transaction_count")
+        ])
+
+    if rows:
+        try:
+            worksheet.update(f"A2:E{len(rows)+1}", rows)
+            print(f"✓ Successfully wrote {len(rows)} monthly summary rows to Google Sheets.")
+        except Exception as e:
+            print(f"❌ Failed to write monthly summaries to Google Sheets: {e}")
+            return False
+    else:
+        print("No monthly summaries to write.")
+    return True
 
 def write_transactions_to_sheet(spreadsheet_id, df, gc, month_label):
     """
